@@ -1,0 +1,94 @@
+version: '3.3'
+
+services:
+  #  Zookeepers  
+  zookeeper:
+    image: zookeeper:3.7.0
+    restart: always
+    hostname: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      JVMFLAGS: -Xmx256m
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181
+      ZOO_4LW_COMMANDS_WHITELIST: "*"
+    healthcheck:
+      test: [ "CMD-SHELL", "echo ruok | nc -w 2 zookeeper 2181" ]
+      interval: 5s
+      timeout: 3s
+      retries: 2
+    logging:
+      options:
+        max-size: "512k"
+        max-file: "10"
+  zoonavigator:
+    image: elkozmon/zoonavigator:latest
+    restart: always
+    ports:
+      - 9005:9005
+  #schema-registry
+  schemaregistry:
+    image: confluentinc/cp-schema-registry:6.2.0
+    restart: always
+    depends_on:
+      - zookeeper
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+    ports:
+      - 8085:8085
+    logging:
+      options:
+        max-size: "512k"
+        max-file: "10"
+
+  #kafka broker
+  kafka1:
+    image: confluentinc/cp-kafka:6.2.0
+    depends_on:
+      - zookeeper
+      - schemaregistry
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: "r1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_SCHEMA_REGISTRY_URL: "schemaregistry:8085"
+      KAFKA_JMX_PORT: 9991
+      KAFKA_HEAP_OPTS: -Xmx512M -Xms512M
+    logging:
+      options:
+        max-size: "512k"
+        max-file: "10"
+
+  akhq:
+    # build:
+    #   context: .
+    image: tchiotludo/akhq
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka1:9092"
+              schema-registry:
+                url: "http://schemaregistry:8085"
+              connect:
+                - name: "connect"
+                  url: "http://connect:8083"
+    ports:
+      - 8090:8080
+    links:
+      - kafka1
+      - schemaregistry

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/veiculo")
 @RequiredArgsConstructor
-public class veiculoController {
+public class VeiculoController {
 
     private final VeiculoService veiculoService;
 
@@ -21,7 +21,6 @@ public class veiculoController {
 
     @PostMapping("/alerta")
     public ResponseEntity<?> enviarAlerta(@RequestBody Mensagem mensagem){
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         return new ResponseEntity(veiculoService.alerta(mensagem), HttpStatus.OK);
     }
 

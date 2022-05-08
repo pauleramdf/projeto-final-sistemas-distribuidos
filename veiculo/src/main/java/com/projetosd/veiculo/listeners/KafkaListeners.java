@@ -1,16 +1,15 @@
-package com.projetosd.veiculo.consumer;
+package com.projetosd.veiculo.listeners;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
 
 import java.util.logging.Logger;
 
-@Service
-@EnableKafka
+@Component
 @RequiredArgsConstructor
 public class KafkaListeners {
     @Value("${spring.enviroment.id}")
@@ -18,15 +17,15 @@ public class KafkaListeners {
 
     private Logger log = Logger.getLogger(KafkaListeners.class.getName());
 
-    @KafkaListener(topics = "mensagem-direta-#{'${VEICULO_ID:1}'}", groupId = "group1")
+    @KafkaListener(id = "mensagemdireta", topics = "mensagem-direta-#{'${VEICULO_ID:1}'}", groupId = "veiculos")
     public void mensagemDireta(ConsumerRecord<String, String> record){
         log.info("chegou mensagem direta");
         System.out.println(record.key());
         System.out.println("chegou a mensagem: " + record.value());
     }
 
-    @KafkaListener(topics = "alerta",groupId = "group1")
-    public void alerta(ConsumerRecord<String, String> record){
-        System.out.println("listener");
+    @KafkaListener(id = "alerta", topics = "alerta",groupId = "veiculos")
+    public void alerta(@Payload String message){
+        System.out.println("alerta: " +message);
     }
 }

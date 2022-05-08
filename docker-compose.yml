@@ -1,6 +1,24 @@
 version: '3.3'
 
 services:
+  veiculo1:
+    image: veiculo
+    ports:
+      - 9000:9000
+    environment:
+      SERVER_PORT: 9000
+      KAFKA_SERVER: kafka1:9092
+      SCHEMA_REGISTRY: http://schemaregistry:8085
+      VEICULO_ID: 1
+  veiculo2:
+    image: veiculo
+    ports:
+      - 9001:9001
+    environment:
+      SERVER_PORT: 9001
+      KAFKA_SERVER: kafka1:9092
+      SCHEMA_REGISTRY: http://schemaregistry:8085
+      VEICULO_ID: 2
   #  Zookeepers  
   zookeeper:
     image: zookeeper:3.7.0

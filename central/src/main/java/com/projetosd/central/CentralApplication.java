@@ -11,3 +11,11 @@ public class CentralApplication {
     }
 
 }
+
+
+//    Receber posição e velocidade dos veículos
+//  Receber mensagem do veículo para a central de monitoramento
+//         Receber alerta
+//         Receber parada programada
+//         Enviar mensagem para um veículo
+//         Enviar alerta

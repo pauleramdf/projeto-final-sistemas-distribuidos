@@ -1,0 +1,8 @@
+server:
+  port: ${SERVER_PORT:8000}
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVER:localhost:19092}
+    schema-registry: ${SCHEMA_REGISTRY:http://localhost:8085}
+

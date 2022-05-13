@@ -19,13 +19,11 @@ public class KafkaListeners {
 
     @KafkaListener(id = "mensagemdireta", topics = "mensagem-direta-#{'${VEICULO_ID:1}'}", groupId = "veiculos")
     public void mensagemDireta(ConsumerRecord<String, String> record){
-        log.info("chegou mensagem direta");
-        System.out.println(record.key());
-        System.out.println("chegou a mensagem: " + record.value());
+        log.info("chegou mensagem direta " + record.value());
     }
 
     @KafkaListener(id = "alerta", topics = "alerta",groupId = "veiculos")
     public void alerta(@Payload String message){
-        System.out.println("alerta: " +message);
+        log.info("alerta " + message);
     }
 }

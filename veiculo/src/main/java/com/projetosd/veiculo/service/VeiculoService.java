@@ -1,11 +1,14 @@
 package com.projetosd.veiculo.service;
 
+import com.projetosd.veiculo.constants.LocalStorage;
 import com.projetosd.veiculo.model.Mensagem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +40,12 @@ public class VeiculoService {
     }
 
     public String paradaProgramada(Mensagem mensagem) {
-        System.out.println("veiculo realizando parada");
 //        String key = UUID.randomUUID().toString();
+        LocalStorage.setVeiculoAtivo(false);
         kafkaService.createMensagem(VEICULO_ID, "parada", mensagem.getMensagem());
+        CompletableFuture.delayedExecutor(mensagem.getTempoParada(), TimeUnit.SECONDS).execute(() -> {
+            LocalStorage.setVeiculoAtivo(true);
+        });
         return "enviado";
     }
 

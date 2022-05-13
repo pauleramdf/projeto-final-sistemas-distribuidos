@@ -1,6 +1,7 @@
 package com.projetosd.veiculo.service;
 
 import com.projetosd.veiculo.config.kafka.ProducerConfig;
+import com.projetosd.veiculo.listeners.KafkaListeners;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -19,8 +21,12 @@ public class KafkaService {
 
     private final ProducerConfig kafkaProducerConfig;
 
+    private Logger log = Logger.getLogger(KafkaService.class.getName());
+
     public void createMensagem(String key, String topic, String message){
 
+        String info = String.format("criando mensagem %s no topico %s com a chave %s", message, topic, key);
+        log.info(info);
         Future<RecordMetadata> send = kafkaProducerConfig
                 .producerFactory()
                 .createProducer()
@@ -28,7 +34,6 @@ public class KafkaService {
     }
     @PostConstruct
     public void init(){
-        System.out.println("iniciado o listenner com"+VEICULO_ID);
         createMensagem("equipamento "+VEICULO_ID, "novo-veiculo", VEICULO_ID);
     }
 }

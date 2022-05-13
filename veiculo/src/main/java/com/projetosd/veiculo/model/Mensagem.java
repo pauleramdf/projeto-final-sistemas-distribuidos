@@ -10,4 +10,5 @@ import lombok.Setter;
 public class Mensagem {
     private String mensagem;
     private String destino;
+    private Integer tempoParada;
 }

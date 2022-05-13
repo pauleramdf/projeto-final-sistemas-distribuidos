@@ -10,8 +10,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Veiculo {
 
-    private Long id;
     private String posicao;
-    private Double velocidade;
+    private Integer velocidade;
 
+    @Override
+    public String toString(){
+        return String.format("Veiculo na posição %s com velocidade %s", posicao, velocidade.toString());
+    }
 }

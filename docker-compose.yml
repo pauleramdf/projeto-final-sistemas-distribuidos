@@ -1,6 +1,13 @@
 version: '3.3'
 
 services:
+  central:
+    image: central
+    ports:
+      - 8000:8000
+    environment:
+      KAFKA_SERVER: kafka1:9092
+      SCHEMA_REGISTRY: http://schemaregistry:8085
   veiculo1:
     image: veiculo
     ports:

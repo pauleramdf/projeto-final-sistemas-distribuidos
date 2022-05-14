@@ -34,17 +34,18 @@ public class GeneratePositions {
         int velocidade = 0;
         Veiculo veiculo = LocalStorage.getVeiculo();
         if(LocalStorage.isVeiculoAtivo()){
+            veiculo.setId(Integer.valueOf(VEICULO_ID));
             veiculo.setVelocidade(gerador.nextInt(100));
-            int x = gerador.nextInt(-90,90);
-            int y = gerador.nextInt(-180,180);
-            veiculo.setPosicao("(lat: " +y+ ", lng: "+ x+")");
+            veiculo.setPosicaoX(gerador.nextDouble(-90,90));
+            veiculo.setPosicaoY(gerador.nextDouble(-180,180));
             log.info("veiculo em movimento");
-            kafkaService.createMensagem(VEICULO_ID,"posicao",veiculo.toString());
+            LocalStorage.setVeiculo(veiculo);
+            kafkaService.sendVeiculo(VEICULO_ID,"posicao",veiculo);
         }
         else{
             veiculo.setVelocidade(0);
             log.info("veiculo parado");
-            kafkaService.createMensagem(VEICULO_ID,"posicao",veiculo.toString());
+            kafkaService.sendVeiculo(VEICULO_ID,"posicao",veiculo);
         }
     }
 }

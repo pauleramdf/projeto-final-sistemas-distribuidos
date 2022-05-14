@@ -2,6 +2,7 @@ package com.projetosd.veiculo.service;
 
 import com.projetosd.veiculo.config.kafka.ProducerConfig;
 import com.projetosd.veiculo.listeners.KafkaListeners;
+import com.projetosd.veiculo.model.Veiculo;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -34,6 +35,22 @@ public class KafkaService {
     }
     @PostConstruct
     public void init(){
-        createMensagem("equipamento "+VEICULO_ID, "novo-veiculo", VEICULO_ID);
+        Veiculo veiculo = new Veiculo();
+        veiculo.setPosicaoX(0D);
+        veiculo.setPosicaoY(0D);
+        veiculo.setVelocidade(0);
+        veiculo.setId(Integer.valueOf(VEICULO_ID));
+        sendVeiculo(VEICULO_ID, "novo-veiculo", veiculo);
+    }
+
+    public void sendVeiculo(String key, String topic, Veiculo veiculo) {
+
+//        String info = String.format("criando mensagem %s no topico %s com a chave %s", topic, key);
+//        log.info(info);
+
+        Future<RecordMetadata> send = kafkaProducerConfig
+                .kafkaVeiculo()
+                .createProducer()
+                .send(new ProducerRecord<>(topic, key, veiculo));
     }
 }

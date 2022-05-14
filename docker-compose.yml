@@ -2,14 +2,14 @@ version: '3.3'
 
 services:
   central:
-    image: central
+    image: paulomdf/projeto-fina-sd-central
     ports:
       - 8000:8000
     environment:
       KAFKA_SERVER: kafka1:9092
       SCHEMA_REGISTRY: http://schemaregistry:8085
   veiculo1:
-    image: veiculo
+    image: paulomdf/projeto-fina-sd-veiculo
     ports:
       - 9000:9000
     environment:
@@ -18,7 +18,7 @@ services:
       SCHEMA_REGISTRY: http://schemaregistry:8085
       VEICULO_ID: 1
   veiculo2:
-    image: veiculo
+    image: paulomdf/projeto-fina-sd-veiculo
     ports:
       - 9001:9001
     environment:

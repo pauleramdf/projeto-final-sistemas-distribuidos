@@ -6,3 +6,11 @@ spring:
     bootstrap-servers: ${KAFKA_SERVER:localhost:19092}
     schema-registry: ${SCHEMA_REGISTRY:http://localhost:8085}
 
+logging:
+  file:
+    name: "log"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
